@@ -116,7 +116,18 @@ class Powers(Resource):
         else:
             return powers_schema.dump(all_powers), 200
 
+@ns.route('/powers/<int:id>')
+class PowersByID(Resource):
 
+    def get(self, id):
+        powr = Power.query.get(id)
+
+        if not powr:
+            return {
+                "error": "Power not found"
+            }, 404
+        else:
+            return power_schema.dump(powr), 200
 
 
 

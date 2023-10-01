@@ -47,27 +47,15 @@ heroes_schema = HeroesSchema(many=True)
 
 class PowersSchema(ma.SQLAlchemySchema):
     class Meta:
-        model = Hero
+        model = Power
         ordered=True
 
     id = ma.auto_field()
     name = ma.auto_field()
-    super_name = ma.auto_field()
+    description = ma.auto_field()
 
 power_schema = PowersSchema()
 powers_schema = PowersSchema(many=True)
-
-class HeroPowerSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = Hero
-        ordered=True
-
-    id = ma.auto_field()
-    name = ma.auto_field()
-    super_name = ma.auto_field()
-
-hero_power_schema = HeroPowerSchema()
-hero_powers_schema = HeroPowerSchema(many=True)
 
 
 
@@ -96,7 +84,7 @@ class HeroesByID(Resource):
             }, 404
         else:
             powers = Power.query.join(HeroPower).filter(HeroPower.hero_id == id).all()
-                        
+
             res_body = {
                 "id" : hero.id,
                 "name" : hero.name,
@@ -113,6 +101,20 @@ class HeroesByID(Resource):
                 res_body["powers"].append(power_details)
 
             return res_body, 200
+
+
+@ns.route('/powers')
+class Powers(Resource):
+
+    def get(self):
+        all_powers = Power.query.all()
+
+        if not all_powers:
+            return {
+                "error": "No powers not found"
+            }, 404
+        else:
+            return powers_schema.dump(all_powers), 200
 
 
 

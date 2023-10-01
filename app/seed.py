@@ -49,8 +49,7 @@ if __name__ == '__main__':
             )
 
             all_heroes.append(hero)
-            
-        db.session.add_all(all_heroes)
+            db.session.add(hero)
 
         print("🦸‍♀️ Seeding powers...")
         powers = []
@@ -60,9 +59,10 @@ if __name__ == '__main__':
                 description=power_data["description"]
                 )
             
-            all_heroes.append(power)
-            
-        db.session.add_all(powers)
+            powers.append(power)
+            db.session.add(power)
+
+        db.session.commit()
 
         print("🦸‍♀️ Adding powers to heroes...")
         all_hero_powers = []
@@ -70,11 +70,12 @@ if __name__ == '__main__':
             for i in range(random.randint(1, 2)):
                 hero_power = HeroPower(
                     strength=random.choice(strengths),
-                    hero_id=hero,
-                    power_id=random.choice(powers)
+                    hero_id=hero.id,
+                    power_id=random.choice(powers).id
                 )
 
                 all_hero_powers.append(hero_power)
+                db.session.add(hero_power)
 
         db.session.add_all(all_hero_powers)
 

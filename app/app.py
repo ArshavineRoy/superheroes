@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-from flask import Flask
+from flask import Flask, render_template
 from flask_migrate import Migrate
 from models.db_config import db
 from models.hero import Hero
@@ -72,6 +72,11 @@ hero_powers_model = api.model(
         "hero_id" : fields.Integer,
     }
 )
+
+@app.route('/')
+@app.route('/<int:id>')
+def index(id=0):
+    return render_template("index.html")
 
 
 @ns.route('/heroes')

@@ -58,6 +58,15 @@ power_schema = PowersSchema()
 powers_schema = PowersSchema(many=True)
 
 
+# RESTx Models
+power_model = api.model(
+    "Power Input", {
+        "description": fields.String,
+    }
+)
+
+
+
 
 @ns.route('/heroes')
 class Heroes(Resource):
@@ -128,6 +137,23 @@ class PowersByID(Resource):
             }, 404
         else:
             return power_schema.dump(powr), 200
+
+    @ns.expect(power_model)
+    def patch(self, id):
+        powr = Power.query.get(id)
+
+        if powr:
+            powr.description = ns.payload['description']
+        
+            db.session.commit()
+            
+            return power_schema.dump(powr), 200
+        
+        else:
+            return {
+                "error": "Power not found"
+            }, 404
+
 
 
 

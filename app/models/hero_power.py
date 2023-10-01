@@ -1,6 +1,8 @@
-from db_config import db
+from .db_config import db
 
 class HeroPower(db.Model):
+
+    __tablename__ = 'hero_powers'
 
     id = db.Column(db.Integer, primary_key=True)
     strength = db.Column(db.String)

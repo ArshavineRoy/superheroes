@@ -43,9 +43,32 @@ class HeroesSchema(ma.SQLAlchemySchema):
     name = ma.auto_field()
     super_name = ma.auto_field()
 
-hero_schema = HeroesSchema()
-heroes_schema = HeroesSchema(many=True)
+hero_power_schema = HeroesSchema()
+hero_powers_schema = HeroesSchema(many=True)
 
+class PowersSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Hero
+        ordered=True
+
+    id = ma.auto_field()
+    name = ma.auto_field()
+    super_name = ma.auto_field()
+
+power_schema = PowersSchema()
+powers_schema = PowersSchema(many=True)
+
+class HeroPowerSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Hero
+        ordered=True
+
+    id = ma.auto_field()
+    name = ma.auto_field()
+    super_name = ma.auto_field()
+
+hero_schema = HeroPowerSchema()
+heroes_schema = HeroPowerSchema(many=True)
 @ns.route('/heroes')
 class Heroes(Resource):
 

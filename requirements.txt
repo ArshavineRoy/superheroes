@@ -4,7 +4,7 @@ attrs
 blinker
 click
 Faker
-Flask
+Flask == 2.3.3 
 flask-marshmallow
 Flask-Migrate
 Flask-RESTful

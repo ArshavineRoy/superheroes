@@ -43,8 +43,7 @@ class HeroesSchema(ma.SQLAlchemySchema):
     name = ma.auto_field()
     super_name = ma.auto_field()
 
-hero_power_schema = HeroesSchema()
-hero_powers_schema = HeroesSchema(many=True)
+heroes_schema = HeroesSchema(many=True)
 
 class PowersSchema(ma.SQLAlchemySchema):
     class Meta:
@@ -67,8 +66,11 @@ class HeroPowerSchema(ma.SQLAlchemySchema):
     name = ma.auto_field()
     super_name = ma.auto_field()
 
-hero_schema = HeroPowerSchema()
-heroes_schema = HeroPowerSchema(many=True)
+hero_power_schema = HeroPowerSchema()
+hero_powers_schema = HeroPowerSchema(many=True)
+
+
+
 @ns.route('/heroes')
 class Heroes(Resource):
 
@@ -77,12 +79,44 @@ class Heroes(Resource):
 
         if not heroes:
             return {
-                "error": "Restaurant not found"
+                "error": "No heroes not found"
             }, 404
         else:
             return heroes_schema.dump(heroes), 200
+        
+@ns.route('/heroes/<int:id>')
+class HeroesByID(Resource):
+
+    def get(self, id):
+        hero = Hero.query.get(id)
+
+        if not hero:
+            return {
+                "error": "Hero not found"
+            }, 404
+        else:
+            powers = Power.query.join(HeroPower).filter(HeroPower.hero_id == id).all()
+                        
+            res_body = {
+                "id" : hero.id,
+                "name" : hero.name,
+                "super_name" : hero.super_name,
+                "powers" : []
+            }
+
+            for power in powers:
+                power_details = {
+                    "id": power.id,
+                    "name": power.name,
+                    "description": power.description
+                }
+                res_body["powers"].append(power_details)
+
+            return res_body, 200
+
+
 
 
 
 if __name__ == '__main__':
-    app.run(port=5555)
+    app.run(port=5555, debug=True)

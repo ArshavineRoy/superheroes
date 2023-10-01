@@ -8,7 +8,6 @@ backcall
 bcc
 bcrypt
 blinker
-Brlapi
 certifi
 chardet
 chrome-gnome-shell

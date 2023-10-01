@@ -10,7 +10,6 @@ bcrypt
 blinker
 certifi
 chardet
-chrome-gnome-shell
 click
 colorama
 comm

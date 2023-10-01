@@ -31,13 +31,33 @@ ma = Marshmallow(app)
 api = Api()
 api.init_app(app)
 
-ns = Namespace("api")
+ns = Namespace("/")
 api.add_namespace(ns)
 
-@ns.route('/')
+class HeroesSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Hero
+        ordered=True
+
+    id = ma.auto_field()
+    name = ma.auto_field()
+    super_name = ma.auto_field()
+
+hero_schema = HeroesSchema()
+heroes_schema = HeroesSchema(many=True)
+
+@ns.route('/heroes')
 class Heroes(Resource):
+
     def get(self):
-        return {"message" : "Welcome Home"}, 200
+        heroes = Hero.query.all()
+
+        if not heroes:
+            return {
+                "error": "Restaurant not found"
+            }, 404
+        else:
+            return heroes_schema.dump(heroes), 200
 
 
 

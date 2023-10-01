@@ -65,7 +65,13 @@ power_model = api.model(
     }
 )
 
-
+hero_powers_model = api.model(
+    "Hero Powers Input", {
+        "strength" : fields.String,
+        "power_id" : fields.Integer,
+        "hero_id" : fields.Integer,
+    }
+)
 
 
 @ns.route('/heroes')
@@ -154,7 +160,57 @@ class PowersByID(Resource):
                 "error": "Power not found"
             }, 404
 
+@ns.route('/hero_powers')
+class HeroPowersByID(Resource):
 
+    @ns.expect(hero_powers_model)
+    def post(self):
+
+        new_hero_power = HeroPower(
+            strength = ns.payload['strength'],
+            power_id = ns.payload['power_id'],
+            hero_id = ns.payload['hero_id']
+        )
+
+        hero = Hero.query.filter(Hero.id == int(ns.payload["hero_id"])).first()
+        power = Power.query.filter(Power.id == int(ns.payload["power_id"])).first()
+
+        if not hero and not power:
+            return { 
+                "error": "Hero and power not found."
+                }, 404
+            
+        elif not hero:
+            return {
+                "error": "Hero not found."
+                }, 404
+        
+        elif not power:
+            return {
+                "error": "Power not found."
+                }, 404
+        else:
+            db.session.add(new_hero_power)
+            db.session.commit()        
+
+            powers = Power.query.join(HeroPower).filter(HeroPower.hero_id == int(ns.payload["hero_id"])).all()
+
+            res_body = {
+                "id": hero.id,
+                "name": hero.name,
+                "super_name": hero.super_name,
+                "powers": []
+            }
+
+            for power in powers:
+                power_details = {
+                    "id": power.id,
+                    "name": power.name,
+                    "description": power.description
+                }
+                res_body["powers"].append(power_details)
+
+            return res_body, 201
 
 
 if __name__ == '__main__':
